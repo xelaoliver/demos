@@ -158,16 +158,16 @@ int main() {
 
         // check if it should be 'to' or 'past' the hour
         if (minutes == 0) {
-            toPast = 0; // none
+            toPast = 0;
         } else if (minutes <= 30) {
-            toPast = 2; // past
+            toPast = 2;
         } else {
-            toPast = 1; // to
-            
-            hour ++;
-			if (hour == 13) {
-				hour = 1;
-			}
+            toPast = 1;
+                        hour ++;
+
+                        if (hour == 13) {
+                                hour = 1;
+                        }
         }
 
         // clear readMinutes and readHours
