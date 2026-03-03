@@ -151,7 +151,7 @@ int main() {
         // get current time
         time_t now = time(NULL);
         struct tm *t = localtime(&now);
-        minutes = ((int)round(t->tm_min/5.0)*5)%60;
+        minutes = ((t->tm_min+2)/5)*5%60;
         int realHour = t->tm_hour;
         hour = realHour%12;
 
@@ -195,3 +195,4 @@ int main() {
 
     return 0;
 }
+
