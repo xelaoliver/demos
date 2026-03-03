@@ -51,13 +51,12 @@ int checkTime(int i, int indexesMinutes[10], int toPast, int indexesHours[8], in
     return 0;
 }
 
-int minutes; int hour;
 int readMinutes[10]; int readHours[8];
 int toPast = 0; // 0: none, 1: to, 2: past
 int showOclock = 1; // 1: show, 0: don't
 
 // make minutes 'human readable'
-void readMinutesToArray(int hour) {
+void readMinutesToArray(int minutes) {
     if (minutes == 5 || minutes == 55) {
         memcpy(readMinutes, (int[]){29, 30, 31, 32}, 4*sizeof(int));
     } else if (minutes == 10 || minutes == 50) {
@@ -74,9 +73,9 @@ void readMinutesToArray(int hour) {
 }
 
 // make hours 'human readable'
-void readHoursToArray(int minutes) {
+void readHoursToArray(int hour, int realHour) {
     showOclock = 1;
-    if (hour == 0) {
+    if (realHour == 0) {
         memcpy(readHours, (int[]){66, 67, 68, 69, 70, 71, 72, 73}, 8*sizeof(int));
         showOclock = 0;
     } else if (hour == 1) {
@@ -101,7 +100,7 @@ void readHoursToArray(int minutes) {
         memcpy(readHours, (int[]){74, 75, 76}, 3*sizeof(int));
     } else if (hour == 11) {
         memcpy(readHours, (int[]){88, 89, 90, 91, 92, 93}, 6*sizeof(int));
-    } else if (hour == 12) {
+    } else if (realHour == 12) {
         memcpy(readHours, (int[]){48, 49, 50, 51, 52, 53}, 6*sizeof(int));
         showOclock = 0;
     }
@@ -146,28 +145,30 @@ int main() {
 
     int first = 1;
 
-    hour = 0;
-    minutes = 0;
+    int minutes = 0; int hour = 0;
 
     while (1) {
         // get current time
         time_t now = time(NULL);
         struct tm *t = localtime(&now);
-        minutes = (int)(round(t->tm_min/5)*5)%60;
-        hour = t->tm_hour%12;
+        minutes = ((int)round(t->tm_min/5.0)*5)%60;
+        int realHour = t->tm_hour;
+        hour = realHour%12;
 
         // check if it should be 'to' or 'past' the hour
         if (minutes == 0) {
-            toPast = 0;
+            toPast = 0; // none
         } else if (minutes <= 30) {
-            toPast = 2;
+            toPast = 2; // past
         } else {
-            toPast = 1;
-                        hour ++;
+            toPast = 1; // to
+            
+            realHour++;
+            if (realHour == 24) {
+                realHour = 0;
+            }
 
-                        if (hour == 13) {
-                                hour = 1;
-                        }
+            hour = realHour%12;
         }
 
         // clear readMinutes and readHours
@@ -176,7 +177,7 @@ int main() {
 
         // get indexes of the current hour and minute
         readMinutesToArray(minutes);
-        readHoursToArray(hour);
+        readHoursToArray(hour, realHour);
 
         if (first) {
             displayClock(clockface);
@@ -189,15 +190,7 @@ int main() {
             displayClock(clockface);
         }
 
-        sleep(150); // 2 and 1/2 minutes
-
-        /* timelapse effect
-        minutes += 5;
-        if (minutes >= 60) {
-            minutes = 0;
-            hour = (hour+1)%13;
-        }
-        */
+        sleep(60); // throttle
     }
 
     return 0;
