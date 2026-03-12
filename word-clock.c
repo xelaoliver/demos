@@ -73,9 +73,9 @@ void readMinutesToArray(int minutes) {
 }
 
 // make hours 'human readable'
-void readHoursToArray(int hour, int realHour) {
+void readHoursToArray(int hour) {
     showOclock = 1;
-    if (realHour == 0) {
+    if (hour == 0) { // midnight
         memcpy(readHours, (int[]){66, 67, 68, 69, 70, 71, 72, 73}, 8*sizeof(int));
         showOclock = 0;
     } else if (hour == 1) {
@@ -100,7 +100,7 @@ void readHoursToArray(int hour, int realHour) {
         memcpy(readHours, (int[]){74, 75, 76}, 3*sizeof(int));
     } else if (hour == 11) {
         memcpy(readHours, (int[]){88, 89, 90, 91, 92, 93}, 6*sizeof(int));
-    } else if (realHour == 12) {
+    } else if (hour == 12) { // midday
         memcpy(readHours, (int[]){48, 49, 50, 51, 52, 53}, 6*sizeof(int));
         showOclock = 0;
     }
@@ -152,8 +152,7 @@ int main() {
         time_t now = time(NULL);
         struct tm *t = localtime(&now);
         minutes = ((t->tm_min+2)/5)*5%60;
-        int realHour = t->tm_hour;
-        hour = realHour%12;
+        hour = t->tm_hour%13;
 
         // check if it should be 'to' or 'past' the hour
         if (minutes == 0) {
@@ -162,13 +161,8 @@ int main() {
             toPast = 2; // past
         } else {
             toPast = 1; // to
-            
-            realHour++;
-            if (realHour == 24) {
-                realHour = 0;
-            }
 
-            hour = realHour%12;
+            hour = (hour+1)%12;
         }
 
         // clear readMinutes and readHours
@@ -177,7 +171,7 @@ int main() {
 
         // get indexes of the current hour and minute
         readMinutesToArray(minutes);
-        readHoursToArray(hour, realHour);
+        readHoursToArray(hour);
 
         if (first) {
             displayClock(clockface);
@@ -195,4 +189,3 @@ int main() {
 
     return 0;
 }
-
