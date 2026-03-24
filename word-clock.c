@@ -17,14 +17,13 @@ int main() {
     };
     int phrase[9] = {0, 1, 2, 115, 116, 117, 118, 119, 120};
 
-    time_t a = time(NULL);
-    struct tm *t = localtime(&a);
-
     int hour, mins, said;
 
     while (1) {
         for (int i = 0; i < 121; i ++) { mask[i] = 0; }
 
+                time_t a = time(NULL);
+                struct tm *t = localtime(&a);
         hour = t->tm_hour%12;
         if (!hour) { hour = 12; }
 
@@ -69,7 +68,7 @@ int main() {
             if (i%11 == 10) { printf("\n"); }
         }
 
-        sleep(60);
+        sleep(5);
 
         printf("\033[11A");
     }
