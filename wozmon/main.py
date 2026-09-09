@@ -1,5 +1,8 @@
 # Alex Oliver, 2026
-# Display machine usage, run using: flask --app main run
+# Display machine usage
+
+# Run using: flask --app main run
+# Open in browser: http://127.0.0.1:5000/
 
 from flask import Flask, jsonify
 from psutil import cpu_percent, virtual_memory, swap_memory, cpu_count
